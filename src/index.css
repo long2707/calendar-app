@@ -6,6 +6,9 @@
   --primary-text-color: #1C252E;
   --font-inter: 'Inter', sans-serif;
   --font-ibm-plex-serif: "IBM Plex Serif", serif;
+  --custom-event-bg-opacity: 0.24;
+  --palette-common-whiteChannel: 255, 255, 255;
+  --fc-small-font-size: 0.813rem;
 }
 
 
@@ -25,7 +28,7 @@
 
 html, body{
   width: 100%;
-  background-color: #fff;
+  background-color: #ffffff;
   color: var(--primary-text-color);
   scroll-behavior: smooth;
   overflow-x: hidden;
@@ -64,5 +67,24 @@ html, body{
 
   .form-item{
     @apply  flex flex-col gap-1.5
+  }
+  .calendar .fc-event .fc-event-main {
+
+  background-color: rgba(var(--palette-common-whiteChannel) , calc(calc(1 - var(--custom-event-bg-opacity)) * 100%));
+ 
+  padding: 2px 6px;
+  border-radius: inherit;
+  border-width: 1px;
+  border-style: solid;
+  border-color: color-mix(in srgb, currentcolor 16%, transparent);
+  border-image: initial;
+  transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1);
+ 
+  }
+  .fc-daygrid-event {
+    border-radius: 3px;
+    font-size: var(--fc-small-font-size);
+    position: relative;
+    white-space: nowrap;
   }
 }
