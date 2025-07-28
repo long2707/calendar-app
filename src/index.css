@@ -9,6 +9,7 @@
   --custom-event-bg-opacity: 0.24;
   --palette-common-whiteChannel: 255, 255, 255;
   --fc-small-font-size: 0.813rem;
+  --fc-today-bg-color: transparent;
 }
 
 
@@ -68,6 +69,9 @@ html, body{
   .form-item{
     @apply  flex flex-col gap-1.5
   }
+  .calendar{
+    --fc-today-bg-color: transparent;
+  }
   .calendar .fc-event .fc-event-main {
 
   background-color: rgba(var(--palette-common-whiteChannel) , calc(calc(1 - var(--custom-event-bg-opacity)) * 100%));
@@ -87,4 +91,44 @@ html, body{
     position: relative;
     white-space: nowrap;
   }
+  .fc .fc-daygrid-day.fc-day-today{
+    background-color:  var(--fc-today-bg-color);
+  }
+  .calendar .fc-day-today .fc-daygrid-day-number {
+    display: inline-flex;
+    color: #ffffff;
+    justify-content: center;
+    font-weight: 600;
+    width: 34px;
+  }
+
+  .calendar .fc-daygrid-day-number{
+    font-size: 0.875rem;
+    line-height: 26px;
+    padding: 4px;
+  }
+  .calendar .fc-day-today .fc-daygrid-day-number::before {
+      position: absolute;
+      content: "";
+      z-index: -1;
+      background-color: #FF5630;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+  }
+  .calendar .fc-event-main{
+    @apply text-xs whitespace-nowrap
+  }
+
+  .calendar .fc-event .fc-event-main-frame {
+    line-height: 1.53846;
+    filter: brightness(0.48);
+}
+.calendar .fc-daygrid-event {
+  margin-top: 0px;
+  margin-bottom: 4px;
+}
+.calendar .fc-daygrid-more-link:hover{
+  @apply underline hover:text-neutral-800  text-sm hover:!bg-transparent hover:transition-colors
+}
 }

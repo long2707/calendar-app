@@ -1,7 +1,13 @@
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { Calendar } from "@fullcalendar/core";
+
 import viLocale from "@fullcalendar/core/locales/vi"; // import locale tiếng Việt
+import { BiChevronRight, BiChevronLeft } from "react-icons/bi";
+import { BsCalendar3, BsCalendar4Range, BsCalendarEvent } from "react-icons/bs";
+import { useEffect, useRef, useState } from "react";
+import calendarService from "../service/calendarService";
+import axios from "axios";
+import axiosClient from "../service/axiosClient";
 
 const events = [
 	{
@@ -44,6 +50,16 @@ const events = [
 		color: "#8E33FF",
 		start: "2025-07-11T23:31:14+00:00",
 		end: "2025-07-12T01:31:14+00:00",
+	},
+	{
+		id: "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6",
+		title: "Corporate Training Workshop",
+		description:
+			"Non rerum modi. Accusamus voluptatem odit nihil in. Quidem et iusto numquam veniam culpa aperiam odio aut enim. Quae vel dolores. Pariatur est culpa veritatis aut dolorem.",
+		allDay: false,
+		color: "#003768",
+		start: "2025-07-14T02:46:14+00:00",
+		end: "2025-07-14T04:01:14+00:00",
 	},
 	{
 		id: "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6",
@@ -100,6 +116,32 @@ const events = [
 ];
 
 export default function CalendarMonth() {
+	const calendarRef = useRef();
+	const [currentMonthLabel, setCurrentMonthLabel] = useState("");
+	const [calendarList, setcalendarList] = useState([]);
+
+	const updateCurrentMonthLabel = () => {
+		const calendarApi = calendarRef.current?.getApi();
+		if (calendarApi) {
+			const date = calendarApi.getDate(); // lấy ngày hiện tại của lịch
+			const month = date.getMonth() + 1; // getMonth: 0 -> 11
+			const year = date.getFullYear();
+			setCurrentMonthLabel(`Tháng ${month} năm ${year}`);
+		}
+	};
+
+	const handlePrev = () => {
+		const calendarApi = calendarRef.current.getApi();
+		calendarApi.prev();
+		updateCurrentMonthLabel();
+	};
+
+	const handleNext = () => {
+		const calendarApi = calendarRef.current.getApi();
+		calendarApi.next();
+		updateCurrentMonthLabel();
+	};
+
 	function renderEventContent(info) {
 		const isAllDay = info.event.allDay;
 
@@ -109,7 +151,7 @@ export default function CalendarMonth() {
 					<div className="fc-event-time">{info.timeText}</div>
 				)}
 				<div className="fc-event-title-container">
-					<div className="fc-event-title fc-sticky">
+					<div className="fc-event-title fc-sticky overflow-ellipsis">
 						{info.event.title}
 					</div>
 				</div>
@@ -117,32 +159,88 @@ export default function CalendarMonth() {
 		);
 	}
 
+	const getAllCalendar = async () => {
+		const data = (await calendarService.getCalendarAll()).data;
+		setcalendarList(data);
+	};
+
+	useEffect(() => {
+		updateCurrentMonthLabel();
+		getAllCalendar();
+	}, []);
+
 	return (
-		<div className="container calendar ">
-			<FullCalendar
-				locale={viLocale}
-				events={events}
-				defaultAllDay={true}
-				// eventWillUnmount={(info) => {
-				// 	console.log("Cleaning up for event", info.event);
-				// 	info.el.classList.remove("fc-daygrid-dot-event");
-				// }}
-				eventDidMount={(info) => {
-					info.el.classList.remove("fc-daygrid-dot-event");
-					info.el.style.backgroundColor = info.backgroundColor;
-					info.el.style.borderColor = info.borderColor;
+		<main className="container calendar mx-auto  pt-8 h-full">
+			<div className="min-h-[50vh]">
+				<div className="flex flex-auto flex-col ">
+					<div className="flex justify-between">
+						<div className="border border-b-gray-400 gap-1">
+							<button>
+								<BsCalendar3 />
+							</button>
+							<button>
+								<BsCalendar4Range />
+							</button>
+							<button>
+								<BsCalendarEvent />
+							</button>
+						</div>
+						<div className="flex justify-between gap-6">
+							<div className="flex items-center justify-center gap-4 mb-4">
+								<button
+									onClick={handlePrev}
+									className="  px-4 py-2 "
+								>
+									<BiChevronLeft />
+								</button>
 
-					const el = info.el.querySelector(".fc-event-main");
+								<span className="font-semibold text-lg">
+									{currentMonthLabel}
+								</span>
 
-					if (el) {
-						el.style.color = info.backgroundColor;
-					}
-				}}
-				eventClassNames={"fc-daygrid-block-event fc-h-event"}
-				eventContent={renderEventContent}
-				plugins={[dayGridPlugin]}
-				eventDisplay="block"
-			/>
-		</div>
+								<button
+									onClick={handleNext}
+									className="  px-4 py-2 "
+								>
+									<BiChevronRight />
+								</button>
+							</div>
+						</div>
+						<div className="">
+							<button> Today</button>
+						</div>
+					</div>
+
+					<FullCalendar
+						ref={calendarRef}
+						locale={viLocale}
+						events={calendarList}
+						defaultAllDay={true}
+						eventDidMount={(info) => {
+							info.el.classList.remove("fc-daygrid-dot-event");
+							info.el.style.backgroundColor =
+								info.backgroundColor;
+							info.el.style.borderColor = info.borderColor;
+
+							const el = info.el.querySelector(".fc-event-main");
+
+							if (el) {
+								el.style.color = info.backgroundColor;
+							}
+						}}
+						eventClassNames={"fc-daygrid-block-event fc-h-event"}
+						eventContent={renderEventContent}
+						plugins={[dayGridPlugin]}
+						eventDisplay="block"
+						eventBackgroundColor="transparent"
+						headerToolbar="false"
+						themeSystem="bootstrap5"
+						height={"auto"}
+						dayMaxEventRows={4} // Chỉ hiện 3 sự kiện, còn lại thì có dòng “More”
+						moreLinkContent={(args) => <>+{args.num} xem thêm</>}
+					/>
+				</div>
+			</div>
+		</main>
 	);
 }
