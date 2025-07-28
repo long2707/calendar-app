@@ -6,8 +6,8 @@ import { BiChevronRight, BiChevronLeft } from "react-icons/bi";
 import { BsCalendar3, BsCalendar4Range, BsCalendarEvent } from "react-icons/bs";
 import { useEffect, useRef, useState } from "react";
 import calendarService from "../service/calendarService";
-import axios from "axios";
-import axiosClient from "../service/axiosClient";
+
+import ModalInput from "./ModalInput";
 
 const events = [
 	{
@@ -51,16 +51,7 @@ const events = [
 		start: "2025-07-11T23:31:14+00:00",
 		end: "2025-07-12T01:31:14+00:00",
 	},
-	{
-		id: "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6",
-		title: "Corporate Training Workshop",
-		description:
-			"Non rerum modi. Accusamus voluptatem odit nihil in. Quidem et iusto numquam veniam culpa aperiam odio aut enim. Quae vel dolores. Pariatur est culpa veritatis aut dolorem.",
-		allDay: false,
-		color: "#003768",
-		start: "2025-07-14T02:46:14+00:00",
-		end: "2025-07-14T04:01:14+00:00",
-	},
+
 	{
 		id: "e99f09a7-dd88-49d5-b1c8-1daf80c2d7b6",
 		title: "Corporate Training Workshop",
@@ -118,6 +109,7 @@ const events = [
 export default function CalendarMonth() {
 	const calendarRef = useRef();
 	const [currentMonthLabel, setCurrentMonthLabel] = useState("");
+	const [showModal, setShowModal] = useState(false);
 	const [calendarList, setcalendarList] = useState([]);
 
 	const updateCurrentMonthLabel = () => {
@@ -173,48 +165,52 @@ export default function CalendarMonth() {
 		<main className="container calendar mx-auto  pt-8 h-full">
 			<div className="min-h-[50vh]">
 				<div className="flex flex-auto flex-col ">
-					<div className="flex justify-between">
-						<div className="border border-b-gray-400 gap-1">
-							<button>
+					<div className="flex justify-between items-center">
+						<div
+							role="group"
+							className="inline-flex items-center p-1 border border-gray-200 gap-1 rounded-sm"
+						>
+							<button className="min-w-8 min-h-8 inline-flex items-center justify-center hover:bg-gray-200 hover:rounded-full hover:cursor-pointer">
 								<BsCalendar3 />
 							</button>
-							<button>
+							<button className="min-w-8 min-h-8 inline-flex items-center justify-center hover:bg-gray-200 hover:rounded-full hover:cursor-pointer">
 								<BsCalendar4Range />
 							</button>
-							<button>
+							<button className="min-w-8 min-h-8 inline-flex items-center justify-center hover:bg-gray-200 hover:rounded-full hover:cursor-pointer">
 								<BsCalendarEvent />
 							</button>
 						</div>
-						<div className="flex justify-between gap-6">
-							<div className="flex items-center justify-center gap-4 mb-4">
-								<button
-									onClick={handlePrev}
-									className="  px-4 py-2 "
-								>
-									<BiChevronLeft />
-								</button>
 
-								<span className="font-semibold text-lg">
-									{currentMonthLabel}
-								</span>
+						<div className="flex items-center justify-center gap-4 ">
+							<button
+								onClick={handlePrev}
+								className="px-1 py-1 cursor-pointer hover:bg-gray-100 hover:rounded-full "
+							>
+								<BiChevronLeft className="text-2xl" />
+							</button>
 
-								<button
-									onClick={handleNext}
-									className="  px-4 py-2 "
-								>
-									<BiChevronRight />
-								</button>
-							</div>
+							<span className="font-semibold text-lg">
+								{currentMonthLabel}
+							</span>
+
+							<button
+								onClick={handleNext}
+								className="px-1 py-1 cursor-pointer hover:bg-gray-100 hover:rounded-full "
+							>
+								<BiChevronRight className="text-2xl " />
+							</button>
 						</div>
-						<div className="">
-							<button> Today</button>
-						</div>
+
+						<button className="bg-orange-600 px-2 py-1 text-white rounded-md text-sm font-bold">
+							{" "}
+							Today
+						</button>
 					</div>
 
 					<FullCalendar
 						ref={calendarRef}
 						locale={viLocale}
-						events={calendarList}
+						events={events}
 						defaultAllDay={true}
 						eventDidMount={(info) => {
 							info.el.classList.remove("fc-daygrid-dot-event");
@@ -236,11 +232,16 @@ export default function CalendarMonth() {
 						headerToolbar="false"
 						themeSystem="bootstrap5"
 						height={"auto"}
-						dayMaxEventRows={4} // Chỉ hiện 3 sự kiện, còn lại thì có dòng “More”
+						dayMaxEventRows={4}
 						moreLinkContent={(args) => <>+{args.num} xem thêm</>}
+						eventClick={() => setShowModal(true)}
 					/>
 				</div>
 			</div>
+			<ModalInput
+				isOpen={showModal}
+				onClose={() => setShowModal(false)}
+			/>
 		</main>
 	);
 }

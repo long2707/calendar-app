@@ -75,7 +75,6 @@ html, body{
   .calendar .fc-event .fc-event-main {
 
   background-color: rgba(var(--palette-common-whiteChannel) , calc(calc(1 - var(--custom-event-bg-opacity)) * 100%));
- 
   padding: 2px 6px;
   border-radius: inherit;
   border-width: 1px;
@@ -119,7 +118,9 @@ html, body{
   .calendar .fc-event-main{
     @apply text-xs whitespace-nowrap
   }
-
+  .calendar .fc-event-main:hover{
+    background-color: rgba(var(--palette-common-whiteChannel) , calc(calc(1 - var(--custom-event-bg-opacity) * 1.5) * 100%));
+  }
   .calendar .fc-event .fc-event-main-frame {
     line-height: 1.53846;
     filter: brightness(0.48);
@@ -129,6 +130,12 @@ html, body{
   margin-bottom: 4px;
 }
 .calendar .fc-daygrid-more-link:hover{
-  @apply underline hover:text-neutral-800  text-sm hover:!bg-transparent hover:transition-colors
+  @apply underline text-neutral-800  text-sm !bg-transparent transition-colors
+}
+button{
+  @apply cursor-pointer
+}
+.fc-event{
+  @apply cursor-pointer
 }
 }
